@@ -979,33 +979,31 @@ footer .logo-text{color:#FFFFFF !important;}footer .logo-text small{color:rgba(2
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  padding:12px 8px;
+  padding:14px 8px;
   border:1px solid rgba(11,31,58,0.14);
   background:#F2F5FA;
   cursor:pointer;
   text-align:center;
   transition:all .18s;
-  position:relative;
   border-radius:2px;
-  gap:4px;
+  user-select:none;
 }
-.heavy-card:hover{border-color:rgba(11,31,58,0.30);background:#E8EDF5;}
+.heavy-card:hover{border-color:rgba(11,31,58,0.35);background:#E8EDF5;}
 .heavy-card input[type=checkbox]{
-  position:absolute;
-  opacity:0;
-  width:0;height:0;
+  display:none;
 }
 .heavy-card.selected{
-  background:#0B1F3A;
-  border-color:#0B1F3A;
+  background:#0B1F3A !important;
+  border-color:#0B1F3A !important;
 }
 .hc-name{
   font-size:11px;
-  font-weight:600;
-  letter-spacing:.04em;
+  font-weight:700;
+  letter-spacing:.06em;
   color:#0B1F3A;
   text-transform:uppercase;
-  line-height:1.3;
+  line-height:1.35;
+  pointer-events:none;
 }
 .heavy-card.selected .hc-name{color:#FFFFFF;}
 .hc-price{display:none;}
@@ -1236,9 +1234,21 @@ footer .logo-text{color:#FFFFFF !important;}footer .logo-text small{color:rgba(2
               <div class="fg">
                 <label>Move Type</label>
                 <select name="Move Type" id="aq-type" onchange="runEngine()">
-                  <option value="local">Local Move</option>
+                  <option value="local">Local Move (includes truck)</option>
                   <option value="labor_only">Labor Only (I have a truck)</option>
                 </select>
+              </div>
+
+              <!-- Number of Movers -->
+              <div class="fg">
+                <label>Number of Movers</label>
+                <div style="display:flex;align-items:center;gap:0;border:1px solid rgba(11,31,58,0.14);overflow:hidden;border-radius:2px;">
+                  <button type="button" onclick="changeMoverCount(-1)" style="width:48px;height:48px;background:#F2F5FA;border:none;border-right:1px solid rgba(11,31,58,0.14);font-size:20px;cursor:pointer;color:#0B1F3A;font-weight:300;flex-shrink:0;transition:background .15s;" onmouseover="this.style.background='#E8EDF5'" onmouseout="this.style.background='#F2F5FA'">−</button>
+                  <div style="flex:1;text-align:center;font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#0B1F3A;padding:10px;" id="mover-count-display">2</div>
+                  <button type="button" onclick="changeMoverCount(1)" style="width:48px;height:48px;background:#F2F5FA;border:none;border-left:1px solid rgba(11,31,58,0.14);font-size:20px;cursor:pointer;color:#0B1F3A;font-weight:300;flex-shrink:0;transition:background .15s;" onmouseover="this.style.background='#E8EDF5'" onmouseout="this.style.background='#F2F5FA'">+</button>
+                </div>
+                <input type="hidden" name="Number of Movers" id="aq-movers" value="2">
+                <div id="mover-rate-hint" style="font-size:11.5px;color:#6E7F96;margin-top:6px;font-family:'DM Mono',monospace;">2 movers · $95/hr · 2hr minimum</div>
               </div>
 
               <!-- ZIPs -->
@@ -1282,22 +1292,22 @@ footer .logo-text{color:#FFFFFF !important;}footer .logo-text small{color:rgba(2
               <div class="fg">
                 <label>Heavy / Specialty Items</label>
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px;">
-                  <label class="heavy-card"><input type="checkbox" value="refrigerator" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Refrigerator</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="treadmill" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Treadmill</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="safe_under_300lbs" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Safe &lt;300lbs</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="safe_300_600lbs" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Safe 300–600lbs</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="upright_piano" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Upright Piano</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="baby_grand_piano" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Baby Grand</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="pool_table" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Pool Table</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="marble_table" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Marble / Stone</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="gun_safe" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Gun Safe</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="washer" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Washer</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="dryer" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Dryer</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="washer_dryer_set" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Washer + Dryer Set</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="stackable_washer_dryer" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Stackable W/D</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="hot_tub_small" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Hot Tub (2–3 Person)</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="hot_tub_standard" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Hot Tub (4–6 Person)</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="hot_tub_large" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Hot Tub (Large/Luxury)</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="refrigerator" class="heavy-item"><span class="hc-name">Refrigerator</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="treadmill" class="heavy-item"><span class="hc-name">Treadmill</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="safe_under_300lbs" class="heavy-item"><span class="hc-name">Safe &lt;300lbs</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="safe_300_600lbs" class="heavy-item"><span class="hc-name">Safe 300–600lbs</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="upright_piano" class="heavy-item"><span class="hc-name">Upright Piano</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="baby_grand_piano" class="heavy-item"><span class="hc-name">Baby Grand</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="pool_table" class="heavy-item"><span class="hc-name">Pool Table</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="marble_table" class="heavy-item"><span class="hc-name">Marble / Stone</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="gun_safe" class="heavy-item"><span class="hc-name">Gun Safe</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="washer" class="heavy-item"><span class="hc-name">Washer</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="dryer" class="heavy-item"><span class="hc-name">Dryer</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="washer_dryer_set" class="heavy-item"><span class="hc-name">Washer + Dryer Set</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="stackable_washer_dryer" class="heavy-item"><span class="hc-name">Stackable W/D</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="hot_tub_small" class="heavy-item"><span class="hc-name">Hot Tub (2–3 Person)</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="hot_tub_standard" class="heavy-item"><span class="hc-name">Hot Tub (4–6 Person)</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="hot_tub_large" class="heavy-item"><span class="hc-name">Hot Tub (Large/Luxury)</span></label>
                 </div>
               </div>
 
@@ -2092,11 +2102,21 @@ const PM_CONFIG = {
       truck_26ft: { base_3hr_min: 747.00, additional_hour_rate: 249.00 }
     }
   },
+  // For local moves with custom mover counts, use labor rate + truck flat add
+  truck_add_on: { truck_16ft: 89, truck_20ft: 109, truck_26ft: 139 },
   labor_only_rates: {
-    two_movers:   { base_2hr_min: 190.00, additional_hour_rate: 95.00 },
-    three_movers: { base_2hr_min: 270.00, additional_hour_rate: 135.00 },
-    four_movers:  { base_2hr_min: 360.00, additional_hour_rate: 180.00 }
+    1:  { hourly: 55,  min_hours: 2 },
+    2:  { hourly: 95,  min_hours: 2 },
+    3:  { hourly: 135, min_hours: 2 },
+    4:  { hourly: 180, min_hours: 2 },
+    5:  { hourly: 225, min_hours: 3 },
+    6:  { hourly: 270, min_hours: 3 },
+    7:  { hourly: 315, min_hours: 3 },
+    8:  { hourly: 360, min_hours: 3 },
+    9:  { hourly: 405, min_hours: 4 },
+    10: { hourly: 450, min_hours: 4 }
   },
+  mover_count: 2,
   heavy_items: {
     refrigerator:          250.00,
     treadmill:             350.00,
@@ -2369,32 +2389,42 @@ function runEngine() {
 
   hideBlock('eng-custom');
 
-  // Assign assets
+  // Assign assets based on home size
   const assets = assignAssets(homeSize);
   if (!assets) return;
 
+  // Use user-selected mover count, minimum 2
+  const selectedMovers = Math.max(1, MOVER_COUNT || 2);
+
+  // Determine truck from home size
+  const truckKey = assets.truck;
+  const truckLabel = truckKey === 'truck_16ft' ? '16 FT Truck' : truckKey === 'truck_20ft' ? '20 FT Truck' : '26 FT Truck';
+  const crewLabel = selectedMovers + ' Mover' + (selectedMovers > 1 ? 's' : '');
+
   // Show assets banner
   showBlock('eng-assets');
-  const crewLabel = assets.crew === 'two_movers' ? '2 Movers' : assets.crew === 'three_movers' ? '3 Movers' : '4 Movers';
-  const truckLabel = assets.truck === 'truck_16ft' ? '16 FT Truck' : assets.truck === 'truck_20ft' ? '20 FT Truck' : '26 FT Truck';
-  setText('eng-assets-text', crewLabel + '  ·  ' + truckLabel + '  ·  Est. ' + assets.hours + ' hrs');
+  setText('eng-assets-text', crewLabel + '  ·  ' + (moveType === 'labor_only' ? 'Labor Only' : truckLabel) + '  ·  Est. ' + assets.hours + ' hrs');
 
   // Calendar multiplier
   const calMod = getCalendarMultiplier(dateStr);
   const calLabel = calMod === 1.20 ? 'End-of-Month Rate (+20%)' : calMod === 1.15 ? 'Weekend Rate (+15%)' : null;
 
-  // Base labor calculation
+  // Base labor calculation using new per-mover rates
   let baseCost = 0;
+  const laborRate = PM_CONFIG.labor_only_rates[selectedMovers];
+  if (!laborRate) { hideBlock('eng-total-block'); return; }
+
   if (moveType === 'labor_only') {
-    const lo = PM_CONFIG.labor_only_rates[assets.crew];
-    if (!lo) { hideBlock('eng-total-block'); return; }
-    const extraHrs = Math.max(0, assets.hours - 2);
-    baseCost = (lo.base_2hr_min + extraHrs * lo.additional_hour_rate) * calMod;
+    // Pure labor - no truck
+    const minHrs = laborRate.min_hours;
+    const effectiveHrs = Math.max(assets.hours, minHrs);
+    baseCost = laborRate.hourly * effectiveHrs * calMod;
   } else {
-    const rates = PM_CONFIG.local_moving_rates[assets.crew] && PM_CONFIG.local_moving_rates[assets.crew][assets.truck];
-    if (!rates) { hideBlock('eng-total-block'); return; }
-    const extraHrs = Math.max(0, assets.hours - 3);
-    baseCost = (rates.base_3hr_min + extraHrs * rates.additional_hour_rate) * calMod;
+    // Local move - labor + truck add-on
+    const minHrs = laborRate.min_hours;
+    const effectiveHrs = Math.max(assets.hours, minHrs);
+    const truckAddOn = PM_CONFIG.truck_add_on[truckKey] || 109;
+    baseCost = (laborRate.hourly * effectiveHrs + truckAddOn) * calMod;
   }
 
   // Distance calculation
@@ -2535,6 +2565,45 @@ function toggleHeavyCard(input) {
   const card = input.closest('.heavy-card');
   if (card) card.classList.toggle('selected', input.checked);
 }
+
+// ── MOVER COUNT CONTROL ──────────────────────────────────────
+var MOVER_COUNT = 2;
+var MOVER_HINTS = {
+  1:  '1 mover · $55/hr · 2hr minimum',
+  2:  '2 movers · $95/hr · 2hr minimum',
+  3:  '3 movers · $135/hr · 2hr minimum',
+  4:  '4 movers · $180/hr · 2hr minimum',
+  5:  '5 movers · $225/hr · 3hr minimum',
+  6:  '6 movers · $270/hr · 3hr minimum',
+  7:  '7 movers · $315/hr · 3hr minimum',
+  8:  '8 movers · $360/hr · 3hr minimum',
+  9:  '9 movers · $405/hr · 4hr minimum',
+  10: '10 movers · $450/hr · 4hr minimum'
+};
+
+function changeMoverCount(delta) {
+  MOVER_COUNT = Math.min(10, Math.max(1, MOVER_COUNT + delta));
+  var disp = document.getElementById('mover-count-display');
+  var inp  = document.getElementById('aq-movers');
+  var hint = document.getElementById('mover-rate-hint');
+  if(disp) disp.textContent = MOVER_COUNT + ' mover' + (MOVER_COUNT > 1 ? 's' : '');
+  if(inp)  inp.value = MOVER_COUNT;
+  if(hint) hint.textContent = MOVER_HINTS[MOVER_COUNT] || '';
+  runEngine();
+}
+
+// Make entire card clickable - attach click to the div wrapper
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.heavy-card').forEach(function(card) {
+    card.addEventListener('click', function(e) {
+      const cb = card.querySelector('input[type=checkbox]');
+      if (!cb) return;
+      cb.checked = !cb.checked;
+      card.classList.toggle('selected', cb.checked);
+      runEngine();
+    });
+  });
+});
 
 </body>
 </html>
