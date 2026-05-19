@@ -1244,7 +1244,7 @@ footer .logo-text{color:#FFFFFF !important;}footer .logo-text small{color:rgba(2
                 <label>Number of Movers</label>
                 <div style="display:flex;align-items:center;gap:0;border:1px solid rgba(11,31,58,0.14);overflow:hidden;border-radius:2px;">
                   <button type="button" onclick="changeMoverCount(-1)" style="width:48px;height:48px;background:#F2F5FA;border:none;border-right:1px solid rgba(11,31,58,0.14);font-size:20px;cursor:pointer;color:#0B1F3A;font-weight:300;flex-shrink:0;transition:background .15s;" onmouseover="this.style.background='#E8EDF5'" onmouseout="this.style.background='#F2F5FA'">−</button>
-                  <div style="flex:1;text-align:center;font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#0B1F3A;padding:10px;" id="mover-count-display">2</div>
+                  <div style="flex:1;text-align:center;font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#0B1F3A;padding:10px;line-height:1;" id="mover-count-display">2 movers</div>
                   <button type="button" onclick="changeMoverCount(1)" style="width:48px;height:48px;background:#F2F5FA;border:none;border-left:1px solid rgba(11,31,58,0.14);font-size:20px;cursor:pointer;color:#0B1F3A;font-weight:300;flex-shrink:0;transition:background .15s;" onmouseover="this.style.background='#E8EDF5'" onmouseout="this.style.background='#F2F5FA'">+</button>
                 </div>
                 <input type="hidden" name="Number of Movers" id="aq-movers" value="2">
@@ -1292,22 +1292,22 @@ footer .logo-text{color:#FFFFFF !important;}footer .logo-text small{color:rgba(2
               <div class="fg">
                 <label>Heavy / Specialty Items</label>
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px;">
-                  <label class="heavy-card"><input type="checkbox" value="refrigerator" class="heavy-item"><span class="hc-name">Refrigerator</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="treadmill" class="heavy-item"><span class="hc-name">Treadmill</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="safe_under_300lbs" class="heavy-item"><span class="hc-name">Safe &lt;300lbs</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="safe_300_600lbs" class="heavy-item"><span class="hc-name">Safe 300–600lbs</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="upright_piano" class="heavy-item"><span class="hc-name">Upright Piano</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="baby_grand_piano" class="heavy-item"><span class="hc-name">Baby Grand</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="pool_table" class="heavy-item"><span class="hc-name">Pool Table</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="marble_table" class="heavy-item"><span class="hc-name">Marble / Stone</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="gun_safe" class="heavy-item"><span class="hc-name">Gun Safe</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="washer" class="heavy-item"><span class="hc-name">Washer</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="dryer" class="heavy-item"><span class="hc-name">Dryer</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="washer_dryer_set" class="heavy-item"><span class="hc-name">Washer + Dryer Set</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="stackable_washer_dryer" class="heavy-item"><span class="hc-name">Stackable W/D</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="hot_tub_small" class="heavy-item"><span class="hc-name">Hot Tub (2–3 Person)</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="hot_tub_standard" class="heavy-item"><span class="hc-name">Hot Tub (4–6 Person)</span></label>
-                  <label class="heavy-card"><input type="checkbox" value="hot_tub_large" class="heavy-item"><span class="hc-name">Hot Tub (Large/Luxury)</span></label>
+                  <label class="heavy-card" onclick="toggleCard(this)"><input type="checkbox" value="refrigerator" class="heavy-item"><span class="hc-name">Refrigerator</span></label>
+                  <label class="heavy-card" onclick="toggleCard(this)"><input type="checkbox" value="treadmill" class="heavy-item"><span class="hc-name">Treadmill</span></label>
+                  <label class="heavy-card" onclick="toggleCard(this)"><input type="checkbox" value="safe_under_300lbs" class="heavy-item"><span class="hc-name">Safe &lt;300lbs</span></label>
+                  <label class="heavy-card" onclick="toggleCard(this)"><input type="checkbox" value="safe_300_600lbs" class="heavy-item"><span class="hc-name">Safe 300–600lbs</span></label>
+                  <label class="heavy-card" onclick="toggleCard(this)"><input type="checkbox" value="upright_piano" class="heavy-item"><span class="hc-name">Upright Piano</span></label>
+                  <label class="heavy-card" onclick="toggleCard(this)"><input type="checkbox" value="baby_grand_piano" class="heavy-item"><span class="hc-name">Baby Grand</span></label>
+                  <label class="heavy-card" onclick="toggleCard(this)"><input type="checkbox" value="pool_table" class="heavy-item"><span class="hc-name">Pool Table</span></label>
+                  <label class="heavy-card" onclick="toggleCard(this)"><input type="checkbox" value="marble_table" class="heavy-item"><span class="hc-name">Marble / Stone</span></label>
+                  <label class="heavy-card" onclick="toggleCard(this)"><input type="checkbox" value="gun_safe" class="heavy-item"><span class="hc-name">Gun Safe</span></label>
+                  <label class="heavy-card" onclick="toggleCard(this)"><input type="checkbox" value="washer" class="heavy-item"><span class="hc-name">Washer</span></label>
+                  <label class="heavy-card" onclick="toggleCard(this)"><input type="checkbox" value="dryer" class="heavy-item"><span class="hc-name">Dryer</span></label>
+                  <label class="heavy-card" onclick="toggleCard(this)"><input type="checkbox" value="washer_dryer_set" class="heavy-item"><span class="hc-name">Washer + Dryer Set</span></label>
+                  <label class="heavy-card" onclick="toggleCard(this)"><input type="checkbox" value="stackable_washer_dryer" class="heavy-item"><span class="hc-name">Stackable W/D</span></label>
+                  <label class="heavy-card" onclick="toggleCard(this)"><input type="checkbox" value="hot_tub_small" class="heavy-item"><span class="hc-name">Hot Tub (2–3 Person)</span></label>
+                  <label class="heavy-card" onclick="toggleCard(this)"><input type="checkbox" value="hot_tub_standard" class="heavy-item"><span class="hc-name">Hot Tub (4–6 Person)</span></label>
+                  <label class="heavy-card" onclick="toggleCard(this)"><input type="checkbox" value="hot_tub_large" class="heavy-item"><span class="hc-name">Hot Tub (Large/Luxury)</span></label>
                 </div>
               </div>
 
@@ -2567,6 +2567,26 @@ function toggleHeavyCard(input) {
 }
 
 // ── MOVER COUNT CONTROL ──────────────────────────────────────
+// HEAVY CARD TOGGLE
+function toggleCard(card) {
+  var cb = card.querySelector('input[type=checkbox]');
+  if (!cb) return;
+  cb.checked = !cb.checked;
+  if (cb.checked) {
+    card.style.background = '#0B1F3A';
+    card.style.borderColor = '#0B1F3A';
+    var nm = card.querySelector('.hc-name');
+    if (nm) nm.style.color = '#FFFFFF';
+  } else {
+    card.style.background = '#F2F5FA';
+    card.style.borderColor = 'rgba(11,31,58,0.14)';
+    var nm2 = card.querySelector('.hc-name');
+    if (nm2) nm2.style.color = '#0B1F3A';
+  }
+  if (typeof runEngine === 'function') runEngine();
+}
+
+// MOVER COUNT
 var MOVER_COUNT = 2;
 var MOVER_HINTS = {
   1:  '1 mover · $55/hr · 2hr minimum',
@@ -2592,18 +2612,7 @@ function changeMoverCount(delta) {
   runEngine();
 }
 
-// Make entire card clickable - attach click to the div wrapper
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.heavy-card').forEach(function(card) {
-    card.addEventListener('click', function(e) {
-      const cb = card.querySelector('input[type=checkbox]');
-      if (!cb) return;
-      cb.checked = !cb.checked;
-      card.classList.toggle('selected', cb.checked);
-      runEngine();
-    });
-  });
-});
+// Heavy card click — handled via onclick on each card directly
 
 </body>
 </html>
