@@ -1582,12 +1582,61 @@ function renderSlots(date){
 function changeMonth(d){cM+=d;if(cM>11){cM=0;cY++;}if(cM<0){cM=11;cY--;}renderCal();}
 renderCal();
 
-// QUOTE
-function submitQuote(){
-  const e=document.getElementById('q-email').value;
-  const p=document.getElementById('q-phone').value;
-  if(!e&&!p){toast('Missing Info','Please enter your email or phone.');return;}
-  toast('Quote Submitted ✓','We\'ll respond within 48 hours with a detailed proposal.');
+// QUOTE — sends to Formspree
+async function submitQuote(){
+  const email  = document.getElementById('q-email').value.trim();
+  const phone  = document.getElementById('q-phone').value.trim();
+  const client = document.getElementById('q-client').value;
+  const service= document.getElementById('q-service').value;
+  const origin = document.getElementById('q-origin').value.trim();
+  const dest   = document.getElementById('q-dest').value.trim();
+  const size   = document.getElementById('q-size').value;
+  const ship   = document.getElementById('q-shipment').value;
+  const date   = document.getElementById('q-date').value;
+  const notes  = document.getElementById('q-notes').value.trim();
+
+  if(!email && !phone){ toast('Missing Info','Please enter your email or phone number.'); return; }
+  if(!origin || !dest){ toast('Missing Info','Please enter origin and destination.'); return; }
+
+  // Disable button while sending
+  const btn = document.querySelector('#quote .btn-primary');
+  const origText = btn.innerHTML;
+  btn.innerHTML = 'Sending...';
+  btn.disabled = true;
+
+  try{
+    const res = await fetch('https://formspree.io/f/mnjrjaln', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        _subject: 'New Quote Request — Prime Meridian Logistics',
+        'Client Type':    client   || 'Not specified',
+        'Service Type':   service  || 'Not specified',
+        'Origin':         origin,
+        'Destination':    dest,
+        'Move Size':      size     || 'Not specified',
+        'Shipment Type':  ship     || 'Not specified',
+        'Preferred Date': date     || 'Not specified',
+        'Phone':          phone    || 'Not provided',
+        'Email':          email    || 'Not provided',
+        'Notes':          notes    || 'None',
+      })
+    });
+
+    if(res.ok){
+      toast('Quote Submitted ✓', 'We will respond within 48 hours with a detailed proposal.');
+      // Clear form
+      ['q-client','q-service','q-origin','q-dest','q-size','q-shipment','q-date','q-phone','q-email','q-notes']
+        .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    } else {
+      toast('Error', 'Something went wrong. Please call us directly at (321) 710-7142.');
+    }
+  } catch(err){
+    toast('Error', 'Could not send. Please call (321) 710-7142.');
+  } finally{
+    btn.innerHTML = origText;
+    btn.disabled = false;
+  }
 }
 
 // TRACKING
