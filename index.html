@@ -1313,9 +1313,9 @@ footer .logo-text{color:#FFFFFF !important;}footer .logo-text small{color:rgba(2
     <h2 class="sh2">Payment & <em>Deposits</em></h2>
     <p class="section-sub">Secure your booking with a refundable deposit. All major cards accepted.</p>
     <div class="payment-tiers reveal">
-      <div class="tier"><div class="tier-icon"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span></div><div class="tier-name">Residential</div><div class="tier-desc">Local and long-distance residential moves. Reserve your crew and truck.</div><div class="tier-amt">$150</div><div class="tier-amt-sub">30% deposit · balance on day of move</div><button class="btn btn-ghost" style="margin-top:24px;width:100%;justify-content:center;" onclick="openStripeDeposit()">Book & Pay</button></div>
-      <div class="tier feat"><div class="tier-icon"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg></span></div><div class="tier-name">Commercial</div><div class="tier-desc">Office relocations, warehouse transfers. Includes coordinator assignment.</div><div class="tier-amt">$500</div><div class="tier-amt-sub">25% deposit · invoice on completion</div><button class="btn btn-primary" style="margin-top:24px;width:100%;justify-content:center;" onclick="openStripeDeposit()">Book & Pay</button></div>
-      <div class="tier"><div class="tier-icon"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg></span></div><div class="tier-name">Freight</div><div class="tier-desc">Container, ocean, and air freight. Deposit secures cargo slot and documentation.</div><div class="tier-amt">$750</div><div class="tier-amt-sub">20% deposit · balance before departure</div><button class="btn btn-ghost" style="margin-top:24px;width:100%;justify-content:center;" onclick="openStripeDeposit()">Book & Pay</button></div>
+      <div class="tier"><div class="tier-icon"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span></div><div class="tier-name">Residential</div><div class="tier-desc">Local and long-distance residential moves. Reserve your crew and truck.</div><div class="tier-amt">$150</div><div class="tier-amt-sub">30% deposit · balance on day of move</div><button class="btn btn-ghost" style="margin-top:24px;width:100%;justify-content:center;" onclick="window.open('https://buy.stripe.com/7sYeVd5Mi25UfU2a411gs02','_blank')">Book & Pay</button></div>
+      <div class="tier feat"><div class="tier-icon"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg></span></div><div class="tier-name">Commercial</div><div class="tier-desc">Office relocations, warehouse transfers. Includes coordinator assignment.</div><div class="tier-amt">$500</div><div class="tier-amt-sub">25% deposit · invoice on completion</div><button class="btn btn-primary" style="margin-top:24px;width:100%;justify-content:center;" onclick="window.open('https://buy.stripe.com/4gMeVd1w2eSG0Z8dgd1gs03','_blank')">Book & Pay</button></div>
+      <div class="tier"><div class="tier-icon"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg></span></div><div class="tier-name">Freight</div><div class="tier-desc">Container, ocean, and air freight. Deposit secures cargo slot and documentation.</div><div class="tier-amt">$750</div><div class="tier-amt-sub">20% deposit · balance before departure</div><button class="btn btn-ghost" style="margin-top:24px;width:100%;justify-content:center;" onclick="window.open('https://buy.stripe.com/cNifZh1w24e20Z8b851gs04','_blank')">Book & Pay</button></div>
     </div>
     <div class="pfc reveal reveal-d1">
       <div class="pfc-head"><div class="pfc-title">Secure Payment</div><div class="pfc-sub">PCI-DSS Level 1 compliant. We never store card details.</div></div>
@@ -1325,7 +1325,7 @@ footer .logo-text{color:#FFFFFF !important;}footer .logo-text small{color:rgba(2
         <div class="fg card-wrap"><label>Card Number</label><input type="text" placeholder="1234 5678 9012 3456" id="cardNum" oninput="detectCard(this)"><div class="card-brand" id="cardBrand"></div></div>
         <div class="form-row"><div class="fg"><label>Expiry</label><input type="text" placeholder="MM / YY" maxlength="7" oninput="fmtExpiry(this)"></div><div class="fg"><label>CVV</label><input type="password" placeholder="···" maxlength="4"></div></div>
         <div class="fg"><label>Billing Address</label><input type="text" placeholder="123 Main St, Orlando FL 32801"></div>
-        <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="openStripeDeposit()">Pay Deposit & Confirm Booking</button>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="document.getElementById('stripeLinkModal').style.display='flex';document.body.style.overflow='hidden'">Pay Deposit &amp; Confirm Booking</button>
         <div class="sec-strip"><span class="ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>256-bit SSL encryption · PCI-DSS Level 1 compliant · We never store your card details</div>
       </div>
     </div>
@@ -1736,21 +1736,21 @@ function toast(title,body){const _tt=document.getElementById('tTitle');const _tb
 </script>
 
 <!-- STRIPE SELECTOR MODAL -->
-<div class="modal-overlay" id="stripeLinkModal" style="display:none;position:fixed;inset:0;background:rgba(11,31,58,0.75);z-index:900;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px);">
-  <div style="background:#FFFFFF;border:1px solid rgba(11,31,58,0.14);padding:48px;max-width:460px;width:100%;position:relative;box-shadow:0 24px 80px rgba(11,31,58,0.25);">
-    <button onclick="closeStripeLinkModal()" style="position:absolute;top:16px;right:16px;background:#F2F5FA;border:1px solid rgba(11,31,58,0.12);color:#6E7F96;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;border-radius:2px;">✕</button>
+<div id="stripeLinkModal" style="display:none;position:fixed;inset:0;background:rgba(11,31,58,0.75);z-index:900;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px);" onclick="if(event.target===this){this.style.display='none';document.body.style.overflow=''}">
+  <div style="background:#FFFFFF;padding:48px;max-width:460px;width:100%;position:relative;box-shadow:0 24px 80px rgba(11,31,58,0.25);">
+    <button onclick="document.getElementById('stripeLinkModal').style.display='none';document.body.style.overflow=''" style="position:absolute;top:16px;right:16px;background:#F2F5FA;border:1px solid rgba(11,31,58,0.12);color:#6E7F96;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;">✕</button>
     <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:#0B1F3A;margin-bottom:6px;">Select Deposit Type</div>
     <div style="font-size:13px;color:#6E7F96;margin-bottom:24px;">Choose your service to proceed to secure Stripe checkout.</div>
     <div style="display:flex;flex-direction:column;gap:12px;">
-      <button onclick="window.open('https://buy.stripe.com/7sYeVd5Mi25UfU2a411gs02','_blank');closeStripeLinkModal();" style="background:#0B1F3A;color:white;border:none;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;">
+      <button onclick="window.open('https://buy.stripe.com/7sYeVd5Mi25UfU2a411gs02','_blank');document.getElementById('stripeLinkModal').style.display='none';document.body.style.overflow=''" style="background:#0B1F3A;color:white;border:none;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;">
         <span><span style="display:block;font-size:10px;letter-spacing:.18em;opacity:.6;margin-bottom:3px;">RESIDENTIAL MOVING</span><span style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;">Deposit — $150</span></span>
         <span style="font-size:18px;">→</span>
       </button>
-      <button onclick="window.open('https://buy.stripe.com/4gMeVd1w2eSG0Z8dgd1gs03','_blank');closeStripeLinkModal();" style="background:#0B1F3A;color:white;border:none;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;">
+      <button onclick="window.open('https://buy.stripe.com/4gMeVd1w2eSG0Z8dgd1gs03','_blank');document.getElementById('stripeLinkModal').style.display='none';document.body.style.overflow=''" style="background:#0B1F3A;color:white;border:none;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;">
         <span><span style="display:block;font-size:10px;letter-spacing:.18em;opacity:.6;margin-bottom:3px;">COMMERCIAL LOGISTICS</span><span style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;">Deposit — $500</span></span>
         <span style="font-size:18px;">→</span>
       </button>
-      <button onclick="window.open('https://buy.stripe.com/cNifZh1w24e20Z8b851gs04','_blank');closeStripeLinkModal();" style="background:#0B1F3A;color:white;border:none;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;">
+      <button onclick="window.open('https://buy.stripe.com/cNifZh1w24e20Z8b851gs04','_blank');document.getElementById('stripeLinkModal').style.display='none';document.body.style.overflow=''" style="background:#0B1F3A;color:white;border:none;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;">
         <span><span style="display:block;font-size:10px;letter-spacing:.18em;opacity:.6;margin-bottom:3px;">FREIGHT & CONTAINER</span><span style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;">Deposit — $750</span></span>
         <span style="font-size:18px;">→</span>
       </button>
@@ -1814,7 +1814,9 @@ async function submitBookingAndPay(){
       })
     });
   }catch(e){}
-  openStripeDeposit();
+  // Show deposit selector
+  document.getElementById('stripeLinkModal').style.display='flex';
+  document.body.style.overflow='hidden';
 }
 </script>
 
