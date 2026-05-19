@@ -1593,7 +1593,7 @@ function animCounter(el){
     if(!start)start=ts;
     const p=Math.min((ts-start)/dur,1);
     const ease=1-Math.pow(1-p,3);
-    if(el && el.isConnected) el.innerHTML=Math.floor(ease*target)+suffix;
+    try{ if(el && el.isConnected) el.innerHTML=Math.floor(ease*target)+suffix; }catch(err){}
     if(p<1)requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
@@ -1619,12 +1619,13 @@ let cY=2026,cM=5,selDate=null,selTime=null;
 const bookedDays=[3,8,15,22,28],partialDays=[5,12,19,25];
 const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-function renderCal(){
-  document.getElementById('calMonthLabel').textContent=months[cM]+' '+cY;
+function renderCal(){ try {
+  const _cml=document.getElementById('calMonthLabel'); if(_cml) _cml.textContent=months[cM]+' '+cY;
   const firstDay=new Date(cY,cM,1).getDay();
   const daysInMonth=new Date(cY,cM+1,0).getDate();
   const today=new Date();
   const grid=document.getElementById('calGrid');
+  if(!grid) return;
   grid.innerHTML='';
   for(let i=0;i<firstDay;i++){const e=document.createElement('div');e.className='day empty';grid.appendChild(e);}
   for(let d=1;d<=daysInMonth;d++){
@@ -1644,86 +1645,68 @@ function renderCal(){
     e.textContent=d;
     grid.appendChild(e);
   }
+} catch(err){ console.warn('Cal render:', err); }
 }
 function pickDate(date){
-  selDate=date;if(document.getElementById('calGrid')) renderCal();renderSlots(date);
-  document.getElementById('bookSummary').style.display='block';
-  document.getElementById('bsDate').textContent=date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  selDate=date;if(document.getElementById('bookSummary')) document.getElementById('bookSummary').style.display='block';if(document.getElementById('calGrid') && document.getElementById('calMonthLabel')){ try{ renderCal(); }catch(e){} }renderSlots(date);
+  const _bsd=document.getElementById('bsDate'); if(_bsd) _bsd.textContent=date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
 }
 function renderSlots(date){
   const all=['7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM','3:00 PM'];
   const full=partialDays.includes(date.getDate())?['9:00 AM','1:00 PM','3:00 PM']:[];
-  document.getElementById('slotsLabel').textContent=date.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' — Available Times';
-  const grid=document.getElementById('slotsGrid');grid.innerHTML='';
+  const _sl=document.getElementById('slotsLabel'); if(_sl) _sl.textContent=date.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' — Available Times';
+  const grid=document.getElementById('slotsGrid'); if(!grid) return; grid.innerHTML='';
   all.forEach(t=>{
     const isFull=full.includes(t);
     const e=document.createElement('div');
     e.className=`slot${isFull?' full':''}${selTime===t?' sel':''}`;
     e.textContent=t;
-    if(!isFull)e.onclick=()=>{selTime=t;renderSlots(date);document.getElementById('bsTime').textContent=t;toast('Time Selected',t+' locked in.');};
+    if(!isFull)e.onclick=()=>{selTime=t;renderSlots(date);const _bst=document.getElementById('bsTime'); if(_bst) _bst.textContent=t;toast('Time Selected',t+' locked in.');};
     grid.appendChild(e);
   });
 }
-function changeMonth(d){cM+=d;if(cM>11){cM=0;cY++;}if(cM<0){cM=11;cY--;}renderCal();}
+function changeMonth(d){cM+=d;if(cM>11){cM=0;cY++;}if(cM<0){cM=11;cY--;}if(document.getElementById('calGrid'))renderCal();}
 renderCal();
 
-// QUOTE — sends to Formspree
-async function submitQuote(){
-  const email  = document.getElementById('q-email').value.trim();
-  const phone  = document.getElementById('q-phone').value.trim();
-  const client = document.getElementById('q-client').value;
-  const service= document.getElementById('q-service').value;
-  const origin = document.getElementById('q-origin').value.trim();
-  const dest   = document.getElementById('q-dest').value.trim();
-  const size   = document.getElementById('q-size').value;
-  const ship   = document.getElementById('q-shipment').value;
-  const date   = document.getElementById('q-date').value;
-  const notes  = document.getElementById('q-notes').value.trim();
+// QUOTE FORM — Formspree AJAX
+async function handleQuoteSubmit(e) {
+  e.preventDefault();
+  const form = document.getElementById('quoteForm');
+  const btn  = document.getElementById('quote-submit-btn');
+  const ok   = document.getElementById('quote-success');
+  const err  = document.getElementById('quote-error');
 
-  if(!email && !phone){ toast('Missing Info','Please enter your email or phone number.'); return; }
-  if(!origin || !dest){ toast('Missing Info','Please enter origin and destination.'); return; }
-
-  // Disable button while sending
-  const btn = document.querySelector('#quote .btn-primary');
-  const origText = btn.innerHTML;
+  if(!btn) return;
   btn.innerHTML = 'Sending...';
-  btn.disabled = true;
+  btn.disabled  = true;
+  ok.style.display  = 'none';
+  err.style.display = 'none';
 
-  try{
+  try {
     const res = await fetch('https://formspree.io/f/mnjrjaln', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        _subject: 'New Quote Request — Prime Meridian Logistics',
-        'Client Type':    client   || 'Not specified',
-        'Service Type':   service  || 'Not specified',
-        'Origin':         origin,
-        'Destination':    dest,
-        'Move Size':      size     || 'Not specified',
-        'Shipment Type':  ship     || 'Not specified',
-        'Preferred Date': date     || 'Not specified',
-        'Phone':          phone    || 'Not provided',
-        'Email':          email    || 'Not provided',
-        'Notes':          notes    || 'None',
-      })
+      method:  'POST',
+      headers: { 'Accept': 'application/json' },
+      body:    new FormData(form)
     });
-
-    if(res.ok){
-      toast('Quote Submitted ✓', 'We will respond within 48 hours with a detailed proposal.');
-      // Clear form
-      ['q-client','q-service','q-origin','q-dest','q-size','q-shipment','q-date','q-phone','q-email','q-notes']
-        .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    const data = await res.json();
+    if (res.ok) {
+      ok.style.display = 'block';
+      form.reset();
+      toast('Quote Submitted ✓', 'We will respond within 48 hours.');
     } else {
-      toast('Error', 'Something went wrong. Please call us directly at (321) 710-7142.');
+      err.textContent = data.errors ? data.errors.map(e=>e.message).join(', ') : 'Submission failed.';
+      err.style.display = 'block';
     }
-  } catch(err){
-    toast('Error', 'Could not send. Please call (321) 710-7142.');
-  } finally{
-    btn.innerHTML = origText;
-    btn.disabled = false;
+  } catch(e) {
+    err.style.display = 'block';
+    toast('Error', 'Please call (321) 710-7142 directly.');
+  } finally {
+    btn.innerHTML = 'Submit Quote Request →';
+    btn.disabled  = false;
   }
 }
 
+// TRACKING
 // TRACKING
 function trackShipment(){
   const id=document.getElementById('trackInput').value.trim();
@@ -1742,14 +1725,14 @@ function confirmPay(){
   const cd=document.getElementById('m-card').value;
   if(!fn||!em||!cd){toast('Missing Info','Please complete all payment fields.');return;}
   const ref='PML-2026-'+Math.floor(10000+Math.random()*90000);
-  document.getElementById('modalBody').innerHTML=`<div class="modal-success"><div class="ms-icon" style="font-size:48px;color:#0A1F44"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#0A1F44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-h">Booking Confirmed</div><div class="ms-p">Your deposit has been processed and your move is confirmed.<br>A confirmation email will arrive within minutes.</div><div class="ms-ref" style="color:#0A1F44">${ref}</div><p style="font-size:11.5px;color:#7A8699;margin-top:8px">Save this reference for tracking and communications.</p></div>`;
+  const _mb=document.getElementById('modalBody'); if(_mb) _mb.innerHTML=`<div class="modal-success"><div class="ms-icon" style="font-size:48px;color:#0A1F44"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#0A1F44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="ms-h">Booking Confirmed</div><div class="ms-p">Your deposit has been processed and your move is confirmed.<br>A confirmation email will arrive within minutes.</div><div class="ms-ref" style="color:#0A1F44">${ref}</div><p style="font-size:11.5px;color:#7A8699;margin-top:8px">Save this reference for tracking and communications.</p></div>`;
   toast('Payment Confirmed ✓','Reference: '+ref);
 }
 
 // Card UI handled by Stripe Elements
 
 // TOAST
-function toast(title,body){document.getElementById('tTitle').textContent=title;document.getElementById('tBody').textContent=body;const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4000);}
+function toast(title,body){const _tt=document.getElementById('tTitle');const _tb=document.getElementById('tBody');if(_tt)_tt.textContent=title;if(_tb)_tb.textContent=body;const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4000);}
 </script>
 
 <!-- STRIPE SELECTOR MODAL -->
