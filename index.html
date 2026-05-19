@@ -1578,13 +1578,26 @@ footer .logo-text{color:#FFFFFF !important;}footer .logo-text small{color:rgba(2
 
     </div>
 
-    <!-- Residential note pointing to engine -->
-    <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);padding:28px 36px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;backdrop-filter:blur(12px);">
-      <div>
-        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:#FFFFFF;margin-bottom:6px;">Residential Moving Deposit</div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.55);max-width:500px;line-height:1.6;">Use our instant quote engine above to get your exact estimate and calculated deposit. Click the button to pay your personalised deposit amount via Stripe.</div>
+    <!-- Residential dynamic deposit -->
+    <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);padding:28px 36px;backdrop-filter:blur(12px);">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:#FFFFFF;margin-bottom:6px;">Residential Moving Deposit</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.55);max-width:500px;line-height:1.6;">Your deposit is calculated from your quote above. Use the engine, then click to pay your exact deposit via Stripe.</div>
+        </div>
+        <div style="text-align:right;">
+          <!-- Shows engine deposit if available, otherwise generic -->
+          <div id="pay-deposit-amount" style="font-family:'Syne',sans-serif;font-weight:800;font-size:32px;color:#FFFFFF;line-height:1;margin-bottom:6px;">—</div>
+          <div id="pay-deposit-label" style="font-size:10.5px;color:rgba(255,255,255,0.40);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;">Get your quote above</div>
+          <a href="https://buy.stripe.com/eVq14n5Mi39YazIcc91gs05" target="_blank" id="pay-residential-btn" class="btn btn-primary" style="min-width:220px;justify-content:center;white-space:nowrap;opacity:0.5;pointer-events:none;" onclick="showDepositNote(event)">
+            Pay Deposit →
+          </a>
+        </div>
       </div>
-      <a href="https://buy.stripe.com/7sYeVd5Mi25UfU2a411gs02" target="_blank" class="btn btn-primary" style="min-width:200px;justify-content:center;white-space:nowrap;">Pay Residential Deposit →</a>
+      <!-- Engine deposit instruction -->
+      <div id="deposit-stripe-note" style="display:none;margin-top:20px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);padding:14px 18px;font-size:12.5px;color:rgba(255,255,255,0.70);line-height:1.6;">
+        <strong style="color:#FFFFFF;">✓ Ready to pay:</strong> Your calculated deposit is <strong id="note-deposit-val" style="color:#A8B8CC;">—</strong>. On Stripe's page, enter this exact amount to secure your booking.
+      </div>
     </div>
 
     <!-- Security strip -->
@@ -2009,7 +2022,7 @@ function toast(title,body){const _tt=document.getElementById('tTitle');const _tb
       <strong>Your engine estimate:</strong> <span id="modal-engine-val"></span> — Select the closest service type below.
     </div>
     <div style="display:flex;flex-direction:column;gap:12px;">
-      <a href="https://buy.stripe.com/7sYeVd5Mi25UfU2a411gs02" target="_blank" style="background:#0B1F3A;color:white;text-decoration:none;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;">
+      <a href="https://buy.stripe.com/eVq14n5Mi39YazIcc91gs05" target="_blank" style="background:#0B1F3A;color:white;text-decoration:none;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;">
         <span><span style="display:block;font-size:10px;letter-spacing:.18em;opacity:.6;margin-bottom:3px;">RESIDENTIAL MOVING</span><span style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;">Deposit — $150</span></span>
         <span style="font-size:18px;">→</span>
       </a>
@@ -2029,7 +2042,7 @@ function toast(title,body){const _tt=document.getElementById('tTitle');const _tb
 <script>
 // STRIPE DEPOSIT FUNCTIONS
 function openStripeDeposit(type){
-  if(type==='residential') window.open('https://buy.stripe.com/7sYeVd5Mi25UfU2a411gs02','_blank');
+  if(type==='residential') window.open('https://buy.stripe.com/eVq14n5Mi39YazIcc91gs05','_blank');
   else if(type==='commercial') window.open('https://buy.stripe.com/4gMeVd1w2eSG0Z8dgd1gs03','_blank');
   else if(type==='freight') window.open('https://buy.stripe.com/cNifZh1w24e20Z8b851gs04','_blank');
   else{
@@ -2643,5 +2656,59 @@ function changeMoverCount(delta) {
 // Heavy card click — handled via onclick on each card directly
 </script>
 
+
+// Sync engine deposit to payment button
+function syncDepositButton() {
+  var engDeposit = document.getElementById('eng-deposit');
+  var engTotal   = document.getElementById('eng-total');
+  var payAmt     = document.getElementById('pay-deposit-amount');
+  var payLbl     = document.getElementById('pay-deposit-label');
+  var payBtn     = document.getElementById('pay-residential-btn');
+  var noteEl     = document.getElementById('deposit-stripe-note');
+  var noteVal    = document.getElementById('note-deposit-val');
+
+  if (!engDeposit || !payAmt) return;
+
+  var deposit = engDeposit.textContent;
+  var total   = engTotal ? engTotal.textContent : '';
+
+  if (deposit && deposit !== '$—' && deposit !== '—') {
+    // Engine has a value — activate button
+    if (payAmt) payAmt.textContent = deposit;
+    if (payLbl) payLbl.textContent = '30% deposit · engine calculated';
+    if (payBtn) {
+      payBtn.style.opacity = '1';
+      payBtn.style.pointerEvents = 'auto';
+      payBtn.textContent = 'Pay ' + deposit + ' Deposit →';
+    }
+    if (noteEl) noteEl.style.display = 'block';
+    if (noteVal) noteVal.textContent = deposit;
+  } else {
+    // No estimate yet
+    if (payAmt) payAmt.textContent = '—';
+    if (payLbl) payLbl.textContent = 'Get your quote above first';
+    if (payBtn) {
+      payBtn.style.opacity = '0.45';
+      payBtn.style.pointerEvents = 'none';
+      payBtn.textContent = 'Pay Deposit →';
+    }
+    if (noteEl) noteEl.style.display = 'none';
+  }
+}
+
+function showDepositNote(e) {
+  // Already handled by syncDepositButton
+}
+
+// Hook into runEngine to also update deposit button
+var _origRunEngine = typeof runEngine === 'function' ? runEngine : null;
+
+
+// Call sync after each engine run — patch runEngine
+document.addEventListener("DOMContentLoaded", function() {
+  var _re = runEngine;
+  runEngine = function() { _re(); syncDepositButton(); };
+  syncDepositButton();
+});
 </body>
 </html>
