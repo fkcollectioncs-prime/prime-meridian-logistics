@@ -1589,7 +1589,7 @@ footer .logo-text{color:#FFFFFF !important;}footer .logo-text small{color:rgba(2
           <!-- Shows engine deposit if available, otherwise generic -->
           <div id="pay-deposit-amount" style="font-family:'Syne',sans-serif;font-weight:800;font-size:32px;color:#FFFFFF;line-height:1;margin-bottom:6px;">—</div>
           <div id="pay-deposit-label" style="font-size:10.5px;color:rgba(255,255,255,0.40);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;">Get your quote above</div>
-          <a href="https://buy.stripe.com/eVq14n5Mi39YazIcc91gs05" target="_blank" id="pay-residential-btn" class="btn btn-primary" style="min-width:220px;justify-content:center;white-space:nowrap;opacity:0.5;pointer-events:none;" onclick="showDepositNote(event)">
+          <a href="https://buy.stripe.com/eVq14n5Mi39YazIcc91gs05" target="_blank" id="pay-residential-btn" class="btn btn-primary" style="min-width:220px;justify-content:center;white-space:nowrap;">
             Pay Deposit →
           </a>
         </div>
@@ -2493,6 +2493,7 @@ function runEngine() {
   if (distanceFlag) {
     showBlock('eng-custom');
     hideBlock('eng-total-block');
+    syncDepositButton();
     return;
   }
 
@@ -2554,6 +2555,8 @@ function runEngine() {
   showBlock('eng-total-block');
   setText('eng-total', fmt(total));
   setText('eng-deposit', fmt(deposit));
+  // Sync deposit pay button
+  syncDepositButton();
 
   // Fill hidden fields for form submission
   const _hq = document.getElementById('hid-quote');
@@ -2673,25 +2676,15 @@ function syncDepositButton() {
   var total   = engTotal ? engTotal.textContent : '';
 
   if (deposit && deposit !== '$—' && deposit !== '—') {
-    // Engine has a value — activate button
     if (payAmt) payAmt.textContent = deposit;
     if (payLbl) payLbl.textContent = '30% deposit · engine calculated';
-    if (payBtn) {
-      payBtn.style.opacity = '1';
-      payBtn.style.pointerEvents = 'auto';
-      payBtn.textContent = 'Pay ' + deposit + ' Deposit →';
-    }
+    if (payBtn) payBtn.textContent = 'Pay ' + deposit + ' Deposit →';
     if (noteEl) noteEl.style.display = 'block';
     if (noteVal) noteVal.textContent = deposit;
   } else {
-    // No estimate yet
     if (payAmt) payAmt.textContent = '—';
     if (payLbl) payLbl.textContent = 'Get your quote above first';
-    if (payBtn) {
-      payBtn.style.opacity = '0.45';
-      payBtn.style.pointerEvents = 'none';
-      payBtn.textContent = 'Pay Deposit →';
-    }
+    if (payBtn) payBtn.textContent = 'Pay Deposit →';
     if (noteEl) noteEl.style.display = 'none';
   }
 }
@@ -2705,10 +2698,6 @@ var _origRunEngine = typeof runEngine === 'function' ? runEngine : null;
 
 
 // Call sync after each engine run — patch runEngine
-document.addEventListener("DOMContentLoaded", function() {
-  var _re = runEngine;
-  runEngine = function() { _re(); syncDepositButton(); };
-  syncDepositButton();
-});
+// syncDepositButton called directly from runEngine below
 </body>
 </html>
