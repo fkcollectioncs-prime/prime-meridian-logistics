@@ -966,6 +966,49 @@ footer .logo-text{color:#FFFFFF !important;}footer .logo-text small{color:rgba(2
   .cal-tab{border-right:none;border-bottom:1px solid rgba(11,31,58,0.10);}
   .calendly-inline-widget{height:600px;}
 }
+
+/* ENGINE ROW */
+.eng-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(11,31,58,0.07);font-size:13px;}
+.eng-row:last-child{border-bottom:none;}
+.eng-label{color:#6E7F96;}
+.eng-val{font-family:'Syne',sans-serif;font-weight:700;color:#0B1F3A;font-size:14px;}
+
+/* Heavy Item Toggle Cards */
+.heavy-card{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:12px 8px;
+  border:1px solid rgba(11,31,58,0.14);
+  background:#F2F5FA;
+  cursor:pointer;
+  text-align:center;
+  transition:all .18s;
+  position:relative;
+  border-radius:2px;
+  gap:4px;
+}
+.heavy-card:hover{border-color:rgba(11,31,58,0.30);background:#E8EDF5;}
+.heavy-card input[type=checkbox]{
+  position:absolute;
+  opacity:0;
+  width:0;height:0;
+}
+.heavy-card.selected{
+  background:#0B1F3A;
+  border-color:#0B1F3A;
+}
+.hc-name{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.04em;
+  color:#0B1F3A;
+  text-transform:uppercase;
+  line-height:1.3;
+}
+.heavy-card.selected .hc-name{color:#FFFFFF;}
+.hc-price{display:none;}
 </style>
 </head>
 <body>
@@ -1163,44 +1206,227 @@ footer .logo-text{color:#FFFFFF !important;}footer .logo-text small{color:rgba(2
 <section id="quote">
   <div class="container">
     <div class="quote-layout">
+
+      <!-- LEFT: Smart Quote Form -->
       <div class="reveal">
         <div class="quote-panel">
-          <div class="qp-head"><div class="eyebrow">Lead Engine</div><div class="qp-title">Request a Logistics Quote</div><div class="qp-sub">We respond within 48 hours with a coordinator-reviewed proposal.</div></div>
+          <div class="qp-head">
+            <div class="eyebrow">Automated Pricing Engine</div>
+            <div class="qp-title">Instant Move Quote</div>
+            <div class="qp-sub">Real-time pricing based on your exact move details. Updates as you fill in.</div>
+          </div>
           <div class="qp-body">
-            <div class="form-row">
-              <div class="fg"><label>Client Type</label><select id="q-client"><option value="">Select...</option><option>Residential</option><option>Commercial</option></select></div>
-              <div class="fg"><label>Service Type</label><select id="q-service"><option value="">Select...</option><option>Local Moving</option><option>Long Distance Moving</option><option>Freight</option><option>Import / Export</option><option>Storage</option><option>Warehousing</option><option>Office Relocation</option><option>Container Shipping</option></select></div>
-            </div>
-            <div class="form-row">
-              <div class="fg"><label>Origin City / Port</label><input type="text" id="q-origin" placeholder="e.g. Orlando, FL"></div>
-              <div class="fg"><label>Destination</label><input type="text" id="q-dest" placeholder="e.g. Los Angeles, CA"></div>
-            </div>
-            <div class="form-row">
-              <div class="fg"><label>Move / Shipment Size</label><select id="q-size"><option value="">Select...</option><option>Studio / 1-BR</option><option>2–3 BR Home</option><option>4+ BR Home</option><option>Office (Small)</option><option>Office (Large)</option><option>Partial Load (LTL)</option><option>Full Truckload (FTL)</option><option>20ft Container</option><option>40ft Container</option><option>40ft HC Container</option></select></div>
-              <div class="fg"><label>Shipment Type</label><select id="q-shipment"><option value="">Select...</option><option>Household Goods</option><option>Commercial Cargo</option><option>Electronics</option><option>Heavy Equipment</option><option>Perishables</option><option>Mixed Cargo</option></select></div>
-            </div>
-            <div class="form-row">
-              <div class="fg"><label>Preferred Date</label><input type="date" id="q-date"></div>
-              <div class="fg"><label>Phone Number</label><input type="tel" id="q-phone" placeholder="(321) 710-7142"></div>
-            </div>
-            <div class="fg"><label>Email Address</label><input type="email" id="q-email" placeholder="your@company.com"></div>
-            <div class="fg"><label>Additional Notes</label><textarea id="q-notes" placeholder="Special handling, timeline, budget range..."></textarea></div>
-            <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitQuote()">Submit Quote Request →</button>
+            <form action="https://formspree.io/f/mnjrjaln" method="POST" id="quoteForm" onsubmit="handleQuoteSubmit(event)">
+              <input type="hidden" name="_subject" value="New Quote Request — Prime Meridian Logistics">
+
+              <!-- Home Size -->
+              <div class="fg">
+                <label>Home / Move Size</label>
+                <select name="Home Size" id="aq-size" onchange="runEngine()">
+                  <option value="">Select home size...</option>
+                  <option value="studio_apartment">Studio Apartment</option>
+                  <option value="one_bedroom_apt">1 Bedroom</option>
+                  <option value="two_bedroom_apt">2 Bedroom</option>
+                  <option value="three_bedroom_home">3 Bedroom Home</option>
+                  <option value="four_bedroom_mansion">4+ Bedroom (Custom Quote)</option>
+                </select>
+              </div>
+
+              <!-- Move Type -->
+              <div class="fg">
+                <label>Move Type</label>
+                <select name="Move Type" id="aq-type" onchange="runEngine()">
+                  <option value="local">Local Move</option>
+                  <option value="labor_only">Labor Only (I have a truck)</option>
+                </select>
+              </div>
+
+              <!-- ZIPs -->
+              <div class="form-row">
+                <div class="fg">
+                  <label>Origin ZIP Code</label>
+                  <input type="text" name="Origin ZIP" id="aq-zip-from" placeholder="e.g. 32801" maxlength="5" oninput="if(this.value.length===5)runEngine()">
+                </div>
+                <div class="fg">
+                  <label>Destination ZIP Code</label>
+                  <input type="text" name="Destination ZIP" id="aq-zip-to" placeholder="e.g. 33101" maxlength="5" oninput="if(this.value.length===5)runEngine()">
+                </div>
+              </div>
+
+              <!-- Move Date -->
+              <div class="fg">
+                <label>Move Date</label>
+                <input type="date" name="Move Date" id="aq-date" onchange="runEngine()">
+              </div>
+
+              <!-- Obstacles -->
+              <div class="fg">
+                <label>Flights of Stairs (at either location)</label>
+                <select name="Stair Flights" id="aq-stairs" onchange="runEngine()">
+                  <option value="0">None</option>
+                  <option value="1">1 Flight</option>
+                  <option value="2">2 Flights</option>
+                  <option value="3">3+ Flights</option>
+                </select>
+              </div>
+
+              <div class="fg">
+                <label>Elevator Available?</label>
+                <select name="Elevator" id="aq-elevator" onchange="runEngine()">
+                  <option value="no">No</option>
+                  <option value="yes">Yes (reservation fee applies)</option>
+                </select>
+              </div>
+
+              <!-- Heavy Items -->
+              <div class="fg">
+                <label>Heavy / Specialty Items</label>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px;">
+                  <label class="heavy-card"><input type="checkbox" value="refrigerator" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Refrigerator</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="treadmill" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Treadmill</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="safe_under_300lbs" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Safe &lt;300lbs</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="safe_300_600lbs" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Safe 300–600lbs</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="upright_piano" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Upright Piano</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="baby_grand_piano" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Baby Grand</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="pool_table" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Pool Table</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="marble_table" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Marble / Stone</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="gun_safe" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Gun Safe</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="washer" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Washer</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="dryer" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Dryer</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="washer_dryer_set" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Washer + Dryer Set</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="stackable_washer_dryer" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Stackable W/D</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="hot_tub_small" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Hot Tub (2–3 Person)</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="hot_tub_standard" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Hot Tub (4–6 Person)</span></label>
+                  <label class="heavy-card"><input type="checkbox" value="hot_tub_large" class="heavy-item" onchange="toggleHeavyCard(this);runEngine()"><span class="hc-name">Hot Tub (Large/Luxury)</span></label>
+                </div>
+              </div>
+
+              <!-- Packing -->
+              <div class="fg">
+                <label>Packing Service</label>
+                <select name="Packing" id="aq-packing" onchange="runEngine()">
+                  <option value="none">No packing needed</option>
+                  <option value="partial">Partial Packing</option>
+                  <option value="full">Full Packing Service</option>
+                </select>
+              </div>
+
+              <!-- Contact -->
+              <div class="form-row">
+                <div class="fg"><label>Your Name</label><input type="text" name="Name" placeholder="Full name" required></div>
+                <div class="fg"><label>Phone</label><input type="tel" name="Phone" placeholder="(321) 710-7142"></div>
+              </div>
+              <div class="fg"><label>Email</label><input type="email" name="email" placeholder="your@email.com" required></div>
+              <div class="fg"><label>Additional Notes</label><textarea name="Notes" placeholder="Anything else we should know..."></textarea></div>
+
+              <!-- Hidden engine output fields sent with form -->
+              <input type="hidden" name="Engine Quote" id="hid-quote">
+              <input type="hidden" name="Assigned Crew" id="hid-crew">
+              <input type="hidden" name="Assigned Truck" id="hid-truck">
+              <input type="hidden" name="Estimated Miles" id="hid-miles">
+
+              <div id="quote-success" style="display:none;background:#f0fdf4;border:1px solid #86efac;padding:16px;margin-bottom:16px;font-size:13.5px;color:#166534;border-radius:2px;">
+                ✓ Quote submitted! We will respond within 48 hours.
+              </div>
+              <div id="quote-error" style="display:none;background:#fef2f2;border:1px solid #fca5a5;padding:16px;margin-bottom:16px;font-size:13.5px;color:#991b1b;border-radius:2px;">
+                Something went wrong. Please call (321) 710-7142.
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;" id="quote-submit-btn">
+                Submit Quote Request →
+              </button>
+            </form>
           </div>
         </div>
       </div>
+
+      <!-- RIGHT: Live Price Breakdown -->
       <div class="quote-info reveal reveal-d1">
         <div class="eyebrow">Why Prime Meridian</div>
-        <div class="qi-title">Precision Logistics Starts With the Right Information.</div>
-        <div class="qi-text">Our operations team reviews every submission personally. No automated pricing engines — every quote is built by a logistics coordinator who understands your specific requirements.</div>
-        <ul class="feat-list">
-          <li class="feat-item"><div class="fi-ico"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span></div><div class="fi-body"><strong>48-Hour Response Guarantee</strong><span>Detailed quote within two business days, always.</span></div></li>
-          <li class="feat-item"><div class="fi-ico"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span></div><div class="fi-body"><strong>Custom Pricing, No Templates</strong><span>Built from your actual origin, cargo, and timeline.</span></div></li>
-          <li class="feat-item"><div class="fi-ico"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.64 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.16 6.16l1.02-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span></div><div class="fi-body"><strong>Coordinator Follow-Up</strong><span>A dedicated coordinator contacts you before finalizing.</span></div></li>
-          <li class="feat-item"><div class="fi-ico"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span></div><div class="fi-body"><strong>Domestic & International</strong><span>US-wide coverage and 120+ country international reach.</span></div></li>
-          <li class="feat-item"><div class="fi-ico"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="2" y1="12" x2="22" y2="12"/></svg></span></div><div class="fi-body"><strong>Commercial Accounts</strong><span>Preferred pricing and dedicated support for ongoing clients.</span></div></li>
+        <div class="qi-title">Live Price Estimate</div>
+        <div class="qi-text">Fill in your move details on the left and your estimate builds in real time — itemized, transparent, no surprises.</div>
+
+        <!-- LIVE LEDGER -->
+        <div id="engine-output" style="background:#FFFFFF;border:1px solid rgba(11,31,58,0.12);overflow:hidden;box-shadow:0 4px 24px rgba(11,31,58,0.07);">
+
+          <!-- Assigned assets banner -->
+          <div id="eng-assets" style="background:#0B1F3A;padding:16px 20px;display:none;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:6px;">Assigned Assets</div>
+            <div id="eng-assets-text" style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:#FFFFFF;"></div>
+          </div>
+
+          <!-- Line items -->
+          <div style="padding:0 20px;">
+            <div class="eng-row" id="eng-row-base" style="display:none;">
+              <span class="eng-label">Base Move Package</span>
+              <span class="eng-val" id="eng-base">—</span>
+            </div>
+            <div class="eng-row" id="eng-row-cal" style="display:none;">
+              <span class="eng-label">Peak Demand Adjustment</span>
+              <span class="eng-val" id="eng-cal">—</span>
+            </div>
+            <div class="eng-row" id="eng-row-dispatch" style="display:none;">
+              <span class="eng-label">Dispatch / Travel Fee</span>
+              <span class="eng-val" id="eng-dispatch">—</span>
+            </div>
+            <div class="eng-row" id="eng-row-mileage" style="display:none;">
+              <span class="eng-label">Mileage Surcharge</span>
+              <span class="eng-val" id="eng-mileage">—</span>
+            </div>
+            <div class="eng-row" id="eng-row-stairs" style="display:none;">
+              <span class="eng-label">Stair Fee</span>
+              <span class="eng-val" id="eng-stairs">—</span>
+            </div>
+            <div class="eng-row" id="eng-row-elevator" style="display:none;">
+              <span class="eng-label">Elevator Reservation</span>
+              <span class="eng-val" id="eng-elevator">$50.00</span>
+            </div>
+            <div class="eng-row" id="eng-row-heavy" style="display:none;">
+              <span class="eng-label">Heavy / Specialty Items</span>
+              <span class="eng-val" id="eng-heavy">—</span>
+            </div>
+            <div class="eng-row" id="eng-row-packing" style="display:none;">
+              <span class="eng-label">Packing Service</span>
+              <span class="eng-val" id="eng-packing">—</span>
+            </div>
+          </div>
+
+          <!-- Custom quote flag -->
+          <div id="eng-custom" style="display:none;background:#FFF8E1;border-top:1px solid rgba(11,31,58,0.08);padding:18px 20px;font-size:13px;color:#7A5500;">
+            ⚠ This move requires a custom coordinator quote. Please submit the form and we will contact you within 24 hours.
+          </div>
+
+          <!-- Total -->
+          <div id="eng-total-block" style="display:none;">
+            <div style="background:#0B1F3A;padding:20px;display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);">Estimated Total</div>
+              <div id="eng-total" style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:#FFFFFF;">$—</div>
+            </div>
+            <div style="background:#F2F5FA;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(11,31,58,0.08);">
+              <div style="font-size:12px;color:#6E7F96;">Required Deposit (30%)</div>
+              <div id="eng-deposit" style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:#0B1F3A;">$—</div>
+            </div>
+            <div style="padding:14px 20px;font-size:11px;color:#6E7F96;border-top:1px solid rgba(11,31,58,0.06);">
+              Estimate based on typical move times. Final price confirmed after coordinator review.
+            </div>
+          </div>
+
+          <!-- Placeholder -->
+          <div id="eng-placeholder" style="padding:40px 20px;text-align:center;color:#A8B8CC;">
+            <div style="font-size:32px;margin-bottom:12px;">📋</div>
+            <div style="font-size:13px;">Select your home size and ZIP codes to see your instant estimate.</div>
+          </div>
+
+        </div>
+
+        <!-- Feature list below -->
+        <ul class="feat-list" style="margin-top:28px;">
+          <li class="feat-item"><div class="fi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="fi-body"><strong>48-Hour Response Guarantee</strong><span>Detailed quote within two business days, always.</span></div></li>
+          <li class="feat-item"><div class="fi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div><div class="fi-body"><strong>Transparent Pricing</strong><span>Every line item shown. No surprise charges on moving day.</span></div></li>
+          <li class="feat-item"><div class="fi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.64 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.16 6.16l1.02-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="fi-body"><strong>Coordinator Follow-Up</strong><span>A dedicated coordinator contacts you before finalizing.</span></div></li>
         </ul>
       </div>
+
     </div>
   </div>
 </section>
@@ -1740,7 +1966,10 @@ function toast(title,body){const _tt=document.getElementById('tTitle');const _tb
   <div style="background:#FFFFFF;padding:48px;max-width:460px;width:100%;position:relative;box-shadow:0 24px 80px rgba(11,31,58,0.25);">
     <button onclick="document.getElementById('stripeLinkModal').style.display='none';document.body.style.overflow=''" style="position:absolute;top:16px;right:16px;background:#F2F5FA;border:1px solid rgba(11,31,58,0.12);color:#6E7F96;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;">✕</button>
     <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:#0B1F3A;margin-bottom:6px;">Select Deposit Type</div>
-    <div style="font-size:13px;color:#6E7F96;margin-bottom:24px;">Choose your service to proceed to secure Stripe checkout.</div>
+    <div style="font-size:13px;color:#6E7F96;margin-bottom:24px;">Choose your service type to proceed to Stripe secure checkout.</div>
+    <div id="modal-engine-note" style="display:none;background:#F2F5FA;border:1px solid rgba(11,31,58,0.10);padding:12px 16px;margin-bottom:16px;font-size:12.5px;color:#0B1F3A;border-radius:2px;">
+      <strong>Your engine estimate:</strong> <span id="modal-engine-val"></span> — Select the closest service type below.
+    </div>
     <div style="display:flex;flex-direction:column;gap:12px;">
       <a href="https://buy.stripe.com/7sYeVd5Mi25UfU2a411gs02" target="_blank" style="background:#0B1F3A;color:white;text-decoration:none;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;">
         <span><span style="display:block;font-size:10px;letter-spacing:.18em;opacity:.6;margin-bottom:3px;">RESIDENTIAL MOVING</span><span style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;">Deposit — $150</span></span>
@@ -1766,9 +1995,19 @@ function openStripeDeposit(type){
   else if(type==='commercial') window.open('https://buy.stripe.com/4gMeVd1w2eSG0Z8dgd1gs03','_blank');
   else if(type==='freight') window.open('https://buy.stripe.com/cNifZh1w24e20Z8b851gs04','_blank');
   else{
+    // Show engine estimate in modal if available
+    var engTotal = document.getElementById('eng-total');
+    var engDeposit = document.getElementById('eng-deposit');
+    var noteEl = document.getElementById('modal-engine-note');
+    var noteVal = document.getElementById('modal-engine-val');
+    if(engTotal && engTotal.textContent !== '$—' && noteEl && noteVal){
+      noteVal.textContent = engTotal.textContent + ' (deposit: ' + (engDeposit ? engDeposit.textContent : '') + ')';
+      noteEl.style.display = 'block';
+    } else if(noteEl) {
+      noteEl.style.display = 'none';
+    }
     var m=document.getElementById('stripeLinkModal');
-    m.style.display='flex';
-    document.body.style.overflow='hidden';
+    if(m){ m.style.display='flex'; document.body.style.overflow='hidden'; }
   }
 }
 function closeStripeLinkModal(){
@@ -1820,11 +2059,481 @@ async function submitBookingAndPay(){
 }
 </script>
 
+<script>
+
+
 
 // CALENDLY TAB SWITCHING
 function switchCalTab(idx) {
   document.querySelectorAll('.cal-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
   document.querySelectorAll('.cal-widget-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+}
+</script>
+
+
+<script>
+// ═══════════════════════════════════════════════════════
+// PRIME MERIDIAN LOGISTICS — AUTOMATED PRICING ENGINE
+// VERSION 2026.1.0
+// ═══════════════════════════════════════════════════════
+
+const PM_CONFIG = {
+  local_moving_rates: {
+    two_movers: {
+      truck_16ft: { base_3hr_min: 357.00, additional_hour_rate: 119.00 },
+      truck_20ft: { base_3hr_min: 387.00, additional_hour_rate: 129.00 },
+      truck_26ft: { base_3hr_min: 447.00, additional_hour_rate: 149.00 }
+    },
+    three_movers: {
+      truck_20ft: { base_3hr_min: 507.00, additional_hour_rate: 169.00 },
+      truck_26ft: { base_3hr_min: 567.00, additional_hour_rate: 189.00 }
+    },
+    four_movers: {
+      truck_26ft: { base_3hr_min: 747.00, additional_hour_rate: 249.00 }
+    }
+  },
+  labor_only_rates: {
+    two_movers:   { base_2hr_min: 190.00, additional_hour_rate: 95.00 },
+    three_movers: { base_2hr_min: 270.00, additional_hour_rate: 135.00 },
+    four_movers:  { base_2hr_min: 360.00, additional_hour_rate: 180.00 }
+  },
+  heavy_items: {
+    refrigerator:          250.00,
+    treadmill:             350.00,
+    safe_under_300lbs:     350.00,
+    safe_300_600lbs:       850.00,
+    upright_piano:         750.00,
+    baby_grand_piano:      2500.00,
+    pool_table:            950.00,
+    marble_table:          850.00,
+    gun_safe:              950.00,
+    washer:                175.00,
+    dryer:                 175.00,
+    washer_dryer_set:      312.00,
+    stackable_washer_dryer:350.00,
+    hot_tub_small:         675.00,
+    hot_tub_standard:      1350.00,
+    hot_tub_large:         2650.00
+  },
+  packing_estimates: {
+    studio:        { partial: 299, full: 499 },
+    one_bedroom_apt:  { partial: 450, full: 650 },
+    two_bedroom_apt:  { partial: 850, full: 1200 },
+    three_bedroom_home: { partial: 1600, full: 2400 }
+  },
+  dispatch_tiers: [
+    { min: 0,  max: 15,    fee: 0,   flag: false },
+    { min: 16, max: 30,    fee: 59,  flag: false },
+    { min: 31, max: 50,    fee: 89,  flag: false },
+    { min: 51, max: 75,    fee: 129, flag: false },
+    { min: 76, max: 99999, fee: 0,   flag: true  }
+  ],
+  mileage_per_mile: { truck_16ft: 1.49, truck_20ft: 1.79, truck_26ft: 2.25 },
+  free_mileage: 15,
+  calendar_multipliers: {
+    weekday_midmonth: 1.00,
+    weekend: 1.15,
+    end_of_month: 1.20,
+    holiday: 1.25
+  },
+  stair_first_flight: 50.00,
+  stair_subsequent:   35.00,
+  elevator_fee:       50.00,
+  deposit_rate:       0.30
+};
+
+// Asset assignment by home size
+function assignAssets(homeSize) {
+  const map = {
+    studio_apartment:     { crew: 'two_movers',   truck: 'truck_16ft', hours: 2.5 },
+    one_bedroom_apt:      { crew: 'two_movers',   truck: 'truck_16ft', hours: 3.5 },
+    two_bedroom_apt:      { crew: 'three_movers', truck: 'truck_20ft', hours: 5.0 },
+    three_bedroom_home:   { crew: 'three_movers', truck: 'truck_26ft', hours: 7.5 },
+    four_bedroom_mansion: null
+  };
+  return map[homeSize] || null;
+}
+
+// ZIP code distance using lat/lng lookup table (Florida-centric + common US ZIPs)
+const ZIP_COORDS = {
+  // Florida
+  '32801':{ la:28.5383, lo:-81.3792 }, '32802':{ la:28.5383, lo:-81.3792 },
+  '32803':{ la:28.5639, lo:-81.3565 }, '32804':{ la:28.5783, lo:-81.3937 },
+  '32805':{ la:28.5194, lo:-81.4060 }, '32806':{ la:28.5122, lo:-81.3649 },
+  '32807':{ la:28.5394, lo:-81.3016 }, '32808':{ la:28.5811, lo:-81.4432 },
+  '32809':{ la:28.4633, lo:-81.3916 }, '32810':{ la:28.6183, lo:-81.4246 },
+  '32811':{ la:28.5072, lo:-81.4338 }, '32812':{ la:28.4833, lo:-81.3200 },
+  '32814':{ la:28.5661, lo:-81.3436 }, '32817':{ la:28.5956, lo:-81.2626 },
+  '32818':{ la:28.6039, lo:-81.4699 }, '32819':{ la:28.4575, lo:-81.4469 },
+  '32820':{ la:28.5811, lo:-81.0876 }, '32821':{ la:28.3897, lo:-81.4699 },
+  '32822':{ la:28.5008, lo:-81.3087 }, '32824':{ la:28.3967, lo:-81.3565 },
+  '32825':{ la:28.5467, lo:-81.2626 }, '32826':{ la:28.5656, lo:-81.2193 },
+  '32827':{ la:28.4122, lo:-81.3017 }, '32828':{ la:28.5617, lo:-81.1626 },
+  '32829':{ la:28.4756, lo:-81.2699 }, '32832':{ la:28.4283, lo:-81.2126 },
+  '32835':{ la:28.5139, lo:-81.4699 }, '32836':{ la:28.4233, lo:-81.4838 },
+  '32837':{ la:28.3894, lo:-81.4199 }, '32839':{ la:28.4883, lo:-81.4060 },
+  // Tampa area
+  '33601':{ la:27.9506, lo:-82.4572 }, '33602':{ la:27.9531, lo:-82.4588 },
+  '33606':{ la:27.9344, lo:-82.4744 }, '33607':{ la:27.9644, lo:-82.5072 },
+  '33609':{ la:27.9456, lo:-82.5072 }, '33611':{ la:27.8997, lo:-82.4944 },
+  '33613':{ la:28.0633, lo:-82.4338 }, '33614':{ la:28.0139, lo:-82.4838 },
+  '33615':{ la:28.0150, lo:-82.5588 }, '33619':{ la:27.9233, lo:-82.3838 },
+  // Miami area
+  '33101':{ la:25.7617, lo:-80.1918 }, '33125':{ la:25.7750, lo:-80.2289 },
+  '33126':{ la:25.7683, lo:-80.3072 }, '33127':{ la:25.8067, lo:-80.2072 },
+  '33128':{ la:25.7750, lo:-80.1972 }, '33130':{ la:25.7617, lo:-80.1972 },
+  '33131':{ la:25.7600, lo:-80.1877 }, '33132':{ la:25.7783, lo:-80.1877 },
+  '33133':{ la:25.7283, lo:-80.2388 }, '33134':{ la:25.7467, lo:-80.2788 },
+  '33135':{ la:25.7650, lo:-80.2488 }, '33136':{ la:25.7850, lo:-80.2072 },
+  '33137':{ la:25.8133, lo:-80.1877 }, '33138':{ la:25.8483, lo:-80.1688 },
+  '33139':{ la:25.7817, lo:-80.1388 }, '33140':{ la:25.8033, lo:-80.1272 },
+  '33141':{ la:25.8417, lo:-80.1272 }, '33142':{ la:25.8083, lo:-80.2388 },
+  '33143':{ la:25.7000, lo:-80.2988 }, '33144':{ la:25.7567, lo:-80.3288 },
+  '33145':{ la:25.7533, lo:-80.2288 }, '33146':{ la:25.7183, lo:-80.2688 },
+  '33147':{ la:25.8367, lo:-80.2388 }, '33149':{ la:25.6950, lo:-80.1555 },
+  '33150':{ la:25.8633, lo:-80.2072 }, '33154':{ la:25.8800, lo:-80.1222 },
+  '33155':{ la:25.7350, lo:-80.3372 }, '33156':{ la:25.6883, lo:-80.3155 },
+  '33157':{ la:25.6317, lo:-80.3588 }, '33158':{ la:25.6317, lo:-80.3155 },
+  '33160':{ la:25.9317, lo:-80.1455 }, '33161':{ la:25.9033, lo:-80.1888 },
+  '33162':{ la:25.9317, lo:-80.1888 }, '33165':{ la:25.7350, lo:-80.3588 },
+  '33166':{ la:25.8317, lo:-80.3155 }, '33167':{ la:25.8767, lo:-80.2388 },
+  '33168':{ la:25.8967, lo:-80.2155 }, '33169':{ la:25.9317, lo:-80.2388 },
+  '33170':{ la:25.5767, lo:-80.4155 }, '33172':{ la:25.7717, lo:-80.3872 },
+  '33173':{ la:25.7017, lo:-80.3872 }, '33174':{ la:25.7567, lo:-80.3688 },
+  '33175':{ la:25.7317, lo:-80.3872 }, '33176':{ la:25.6717, lo:-80.3455 },
+  '33177':{ la:25.6283, lo:-80.3988 }, '33178':{ la:25.8317, lo:-80.4255 },
+  '33179':{ la:25.9517, lo:-80.1955 }, '33180':{ la:25.9667, lo:-80.1538 },
+  '33181':{ la:25.9017, lo:-80.1472 }, '33182':{ la:25.7817, lo:-80.4072 },
+  '33183':{ la:25.7067, lo:-80.4072 }, '33184':{ la:25.7317, lo:-80.4255 },
+  '33185':{ la:25.7067, lo:-80.4455 }, '33186':{ la:25.6733, lo:-80.4072 },
+  '33187':{ la:25.6317, lo:-80.4255 }, '33189':{ la:25.5817, lo:-80.4455 },
+  '33190':{ la:25.5617, lo:-80.3605 }, '33193':{ la:25.7133, lo:-80.4455 },
+  '33194':{ la:25.7517, lo:-80.4638 }, '33196':{ la:25.6733, lo:-80.4455 },
+  // Jacksonville
+  '32201':{ la:30.3322, lo:-81.6557 }, '32202':{ la:30.3272, lo:-81.6557 },
+  '32204':{ la:30.3272, lo:-81.6807 }, '32205':{ la:30.3106, lo:-81.7140 },
+  '32206':{ la:30.3472, lo:-81.6390 }, '32207':{ la:30.3006, lo:-81.6307 },
+  '32208':{ la:30.3806, lo:-81.6640 }, '32209':{ la:30.3472, lo:-81.6974 },
+  '32210':{ la:30.2806, lo:-81.7390 }, '32211':{ la:30.3272, lo:-81.5890 },
+  '32212':{ la:30.2406, lo:-81.7140 }, '32216':{ la:30.2906, lo:-81.5640 },
+  '32217':{ la:30.2506, lo:-81.6390 }, '32218':{ la:30.4306, lo:-81.6307 },
+  '32219':{ la:30.4006, lo:-81.7140 }, '32220':{ la:30.3472, lo:-81.7807 },
+  '32221':{ la:30.2806, lo:-81.8140 }, '32222':{ la:30.2406, lo:-81.7890 },
+  '32223':{ la:30.2006, lo:-81.6640 }, '32224':{ la:30.2806, lo:-81.5057 },
+  '32225':{ la:30.3306, lo:-81.5140 }, '32226':{ la:30.4106, lo:-81.5307 },
+  '32233':{ la:30.3606, lo:-81.4390 }, '32234':{ la:30.2706, lo:-81.9307 },
+  '32244':{ la:30.2306, lo:-81.7390 }, '32246':{ la:30.3106, lo:-81.5307 },
+  '32250':{ la:30.2806, lo:-81.4390 }, '32256':{ la:30.2206, lo:-81.5307 },
+  '32257':{ la:30.1906, lo:-81.6140 }, '32258':{ la:30.1606, lo:-81.5640 },
+  '32266':{ la:30.3706, lo:-81.3890 }, '32277':{ la:30.3906, lo:-81.5807 },
+  // Fort Lauderdale
+  '33301':{ la:26.1218, lo:-80.1434 }, '33304':{ la:26.1418, lo:-80.1234 },
+  '33305':{ la:26.1618, lo:-80.1234 }, '33306':{ la:26.1818, lo:-80.1234 },
+  '33308':{ la:26.2018, lo:-80.0934 }, '33309':{ la:26.1818, lo:-80.1634 },
+  '33310':{ la:26.1618, lo:-80.1834 }, '33311':{ la:26.1218, lo:-80.1834 },
+  '33312':{ la:26.0818, lo:-80.1834 }, '33313':{ la:26.1218, lo:-80.2434 },
+  '33314':{ la:26.0618, lo:-80.2234 }, '33315':{ la:26.0918, lo:-80.1634 },
+  '33316':{ la:26.0918, lo:-80.1234 }, '33317':{ la:26.1018, lo:-80.2634 },
+  '33319':{ la:26.1618, lo:-80.2434 }, '33321':{ la:26.2018, lo:-80.2634 },
+  '33322':{ la:26.1418, lo:-80.2834 }, '33324':{ la:26.1018, lo:-80.3034 },
+  '33325':{ la:26.1218, lo:-80.3234 }, '33326':{ la:26.1018, lo:-80.3634 },
+  '33328':{ la:26.0618, lo:-80.3034 }, '33330':{ la:26.0218, lo:-80.3234 },
+  '33331':{ la:26.0018, lo:-80.3634 }, '33334':{ la:26.2018, lo:-80.1434 },
+  '33388':{ la:26.1218, lo:-80.2434 }, '33394':{ la:26.1218, lo:-80.2434 },
+  // West Palm Beach
+  '33401':{ la:26.7153, lo:-80.0534 }, '33405':{ la:26.6753, lo:-80.0534 },
+  '33406':{ la:26.6553, lo:-80.0934 }, '33407':{ la:26.7553, lo:-80.0934 },
+  '33408':{ la:26.8353, lo:-80.0334 }, '33409':{ la:26.6953, lo:-80.1334 },
+  '33410':{ la:26.8353, lo:-80.0934 }, '33411':{ la:26.6753, lo:-80.1734 },
+  '33412':{ la:26.7753, lo:-80.1934 }, '33413':{ la:26.6553, lo:-80.1734 },
+  '33414':{ la:26.6153, lo:-80.2134 }, '33415':{ la:26.6553, lo:-80.1334 },
+  '33417':{ la:26.7153, lo:-80.1134 }, '33418':{ la:26.8753, lo:-80.1134 },
+  // Pensacola
+  '32501':{ la:30.4213, lo:-87.2169 }, '32502':{ la:30.4013, lo:-87.2169 },
+  '32503':{ la:30.4413, lo:-87.1969 }, '32504':{ la:30.4613, lo:-87.1769 },
+  '32505':{ la:30.4413, lo:-87.2469 }, '32506':{ la:30.4213, lo:-87.2869 },
+  '32507':{ la:30.3613, lo:-87.2869 }, '32508':{ la:30.3613, lo:-87.2269 },
+  '32509':{ la:30.4813, lo:-87.2469 }, '32514':{ la:30.5013, lo:-87.2069 },
+  '32526':{ la:30.4613, lo:-87.3269 }, '32534':{ la:30.5013, lo:-87.2669 },
+  // Tallahassee
+  '32301':{ la:30.4382, lo:-84.2807 }, '32303':{ la:30.4782, lo:-84.3107 },
+  '32304':{ la:30.4382, lo:-84.3207 }, '32305':{ la:30.3882, lo:-84.2807 },
+  '32306':{ la:30.4382, lo:-84.2807 }, '32307':{ la:30.4382, lo:-84.2807 },
+  '32308':{ la:30.4782, lo:-84.2407 }, '32309':{ la:30.5182, lo:-84.2007 },
+  '32310':{ la:30.4082, lo:-84.3607 }, '32311':{ la:30.4082, lo:-84.2207 },
+  '32312':{ la:30.5182, lo:-84.2607 }, '32317':{ la:30.4582, lo:-84.1607 },
+  '32399':{ la:30.4382, lo:-84.2807 },
+  // Gainesville
+  '32601':{ la:29.6516, lo:-82.3248 }, '32603':{ la:29.6516, lo:-82.3448 },
+  '32605':{ la:29.6816, lo:-82.3648 }, '32606':{ la:29.6716, lo:-82.4048 },
+  '32607':{ la:29.6316, lo:-82.4248 }, '32608':{ la:29.6016, lo:-82.3848 },
+  '32609':{ la:29.7016, lo:-82.3048 }, '32611':{ la:29.6516, lo:-82.3448 },
+  '32641':{ la:29.6316, lo:-82.2648 }, '32653':{ la:29.7316, lo:-82.3648 },
+  // Sarasota
+  '34230':{ la:27.3364, lo:-82.5307 }, '34231':{ la:27.2564, lo:-82.5307 },
+  '34232':{ la:27.3464, lo:-82.4807 }, '34233':{ la:27.2964, lo:-82.5007 },
+  '34234':{ la:27.3764, lo:-82.5307 }, '34235':{ la:27.3864, lo:-82.4807 },
+  '34236':{ la:27.3364, lo:-82.5507 }, '34237':{ la:27.3364, lo:-82.5107 },
+  '34238':{ la:27.2264, lo:-82.4807 }, '34239':{ la:27.3064, lo:-82.5307 },
+  '34241':{ la:27.2564, lo:-82.4307 }, '34242':{ la:27.2664, lo:-82.5707 },
+  '34243':{ la:27.4064, lo:-82.5107 },
+  // Cape Coral / Fort Myers
+  '33901':{ la:26.6406, lo:-81.8726 }, '33904':{ la:26.5606, lo:-81.9326 },
+  '33907':{ la:26.5806, lo:-81.8726 }, '33908':{ la:26.5206, lo:-81.9326 },
+  '33909':{ la:26.6606, lo:-81.9026 }, '33912':{ la:26.5506, lo:-81.8426 },
+  '33913':{ la:26.5506, lo:-81.7726 }, '33914':{ la:26.5606, lo:-81.9926 },
+  '33919':{ la:26.5506, lo:-81.9326 }, '33966':{ la:26.5806, lo:-81.8226 },
+  '33990':{ la:26.6406, lo:-81.9926 }, '33991':{ la:26.6606, lo:-82.0126 },
+  '33993':{ la:26.7006, lo:-82.0126 },
+};
+
+function getZipCoords(zip) {
+  if (ZIP_COORDS[zip]) return ZIP_COORDS[zip];
+  // Fallback: try to estimate from first 3 digits
+  // Return null if not found
+  return null;
+}
+
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  const R = 3958.8; // miles
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function getCalendarMultiplier(dateStr) {
+  if (!dateStr) return 1.00;
+  const d = new Date(dateStr);
+  const day = d.getDay(); // 0=Sun, 6=Sat
+  const date = d.getDate();
+  const isWeekend = day === 0 || day === 6;
+  const isEndOfMonth = date >= 28;
+  if (isEndOfMonth && isWeekend) return 1.20;
+  if (isEndOfMonth) return 1.20;
+  if (isWeekend) return 1.15;
+  return 1.00;
+}
+
+function getDispatchFee(miles) {
+  for (const tier of PM_CONFIG.dispatch_tiers) {
+    if (miles >= tier.min && miles <= tier.max) {
+      return { fee: tier.fee, flag: tier.flag };
+    }
+  }
+  return { fee: 0, flag: true };
+}
+
+function fmt(n) { return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function show(id) { const e=document.getElementById(id); if(e) e.style.display='flex'; }
+function hide(id) { const e=document.getElementById(id); if(e) e.style.display='none'; }
+function setText(id, val) { const e=document.getElementById(id); if(e) e.textContent=val; }
+function showBlock(id) { const e=document.getElementById(id); if(e) e.style.display='block'; }
+function hideBlock(id) { const e=document.getElementById(id); if(e) e.style.display='none'; }
+
+function runEngine() {
+  const homeSize  = document.getElementById('aq-size') ? document.getElementById('aq-size').value : '';
+  const moveType  = document.getElementById('aq-type') ? document.getElementById('aq-type').value : 'local';
+  const zipFrom   = document.getElementById('aq-zip-from') ? document.getElementById('aq-zip-from').value.trim() : '';
+  const zipTo     = document.getElementById('aq-zip-to') ? document.getElementById('aq-zip-to').value.trim() : '';
+  const dateStr   = document.getElementById('aq-date') ? document.getElementById('aq-date').value : '';
+  const stairs    = parseInt(document.getElementById('aq-stairs') ? document.getElementById('aq-stairs').value : 0);
+  const elevator  = document.getElementById('aq-elevator') ? document.getElementById('aq-elevator').value === 'yes' : false;
+  const packing   = document.getElementById('aq-packing') ? document.getElementById('aq-packing').value : 'none';
+
+  // Get selected heavy items
+  const heavyChecked = document.querySelectorAll('.heavy-item:checked');
+  const heavyItems = Array.from(heavyChecked).map(c => c.value);
+
+  // Need at least home size to run
+  if (!homeSize) {
+    hideBlock('eng-assets');
+    hideBlock('eng-total-block');
+    hideBlock('eng-custom');
+    showBlock('eng-placeholder');
+    ['eng-row-base','eng-row-cal','eng-row-dispatch','eng-row-mileage','eng-row-stairs','eng-row-elevator','eng-row-heavy','eng-row-packing'].forEach(hide);
+    return;
+  }
+
+  hideBlock('eng-placeholder');
+
+  // 4+ bedroom → custom quote
+  if (homeSize === 'four_bedroom_mansion') {
+    hideBlock('eng-total-block');
+    showBlock('eng-custom');
+    hideBlock('eng-assets');
+    return;
+  }
+
+  hideBlock('eng-custom');
+
+  // Assign assets
+  const assets = assignAssets(homeSize);
+  if (!assets) return;
+
+  // Show assets banner
+  showBlock('eng-assets');
+  const crewLabel = assets.crew === 'two_movers' ? '2 Movers' : assets.crew === 'three_movers' ? '3 Movers' : '4 Movers';
+  const truckLabel = assets.truck === 'truck_16ft' ? '16 FT Truck' : assets.truck === 'truck_20ft' ? '20 FT Truck' : '26 FT Truck';
+  setText('eng-assets-text', crewLabel + '  ·  ' + truckLabel + '  ·  Est. ' + assets.hours + ' hrs');
+
+  // Calendar multiplier
+  const calMod = getCalendarMultiplier(dateStr);
+  const calLabel = calMod === 1.20 ? 'End-of-Month Rate (+20%)' : calMod === 1.15 ? 'Weekend Rate (+15%)' : null;
+
+  // Base labor calculation
+  let baseCost = 0;
+  if (moveType === 'labor_only') {
+    const lo = PM_CONFIG.labor_only_rates[assets.crew];
+    if (!lo) { hideBlock('eng-total-block'); return; }
+    const extraHrs = Math.max(0, assets.hours - 2);
+    baseCost = (lo.base_2hr_min + extraHrs * lo.additional_hour_rate) * calMod;
+  } else {
+    const rates = PM_CONFIG.local_moving_rates[assets.crew] && PM_CONFIG.local_moving_rates[assets.crew][assets.truck];
+    if (!rates) { hideBlock('eng-total-block'); return; }
+    const extraHrs = Math.max(0, assets.hours - 3);
+    baseCost = (rates.base_3hr_min + extraHrs * rates.additional_hour_rate) * calMod;
+  }
+
+  // Distance calculation
+  let miles = 0;
+  let dispatchFee = 0;
+  let mileageSurcharge = 0;
+  let distanceFlag = false;
+
+  if (zipFrom.length === 5 && zipTo.length === 5) {
+    const c1 = getZipCoords(zipFrom);
+    const c2 = getZipCoords(zipTo);
+    if (c1 && c2) {
+      miles = Math.round(haversineDistance(c1.la, c1.lo, c2.la, c2.lo));
+      const dispatch = getDispatchFee(miles);
+      dispatchFee = dispatch.fee;
+      distanceFlag = dispatch.flag;
+      if (!distanceFlag && miles > PM_CONFIG.free_mileage) {
+        const billable = miles - PM_CONFIG.free_mileage;
+        const ppm = PM_CONFIG.mileage_per_mile[assets.truck];
+        mileageSurcharge = billable * ppm;
+      }
+    }
+  }
+
+  if (distanceFlag) {
+    showBlock('eng-custom');
+    hideBlock('eng-total-block');
+    return;
+  }
+
+  hideBlock('eng-custom');
+
+  // Stairs
+  let stairCost = 0;
+  if (stairs > 0) stairCost += PM_CONFIG.stair_first_flight;
+  if (stairs > 1) stairCost += (stairs - 1) * PM_CONFIG.stair_subsequent;
+
+  // Heavy items
+  let heavyCost = 0;
+  heavyItems.forEach(item => {
+    heavyCost += PM_CONFIG.heavy_items[item] || 0;
+  });
+
+  // Packing
+  let packingCost = 0;
+  if (packing !== 'none') {
+    const pKey = homeSize === 'studio_apartment' ? 'studio' : homeSize;
+    const pEst = PM_CONFIG.packing_estimates[pKey];
+    if (pEst) packingCost = packing === 'full' ? pEst.full : pEst.partial;
+  }
+
+  // Grand total
+  const calSurcharge = baseCost - (baseCost / calMod);
+  const baseOnly = baseCost / calMod;
+  const total = baseCost + dispatchFee + mileageSurcharge + stairCost + (elevator ? PM_CONFIG.elevator_fee : 0) + heavyCost + packingCost;
+  const deposit = total * PM_CONFIG.deposit_rate;
+
+  // Update UI rows
+  show('eng-row-base');
+  setText('eng-base', fmt(baseOnly));
+
+  if (calMod > 1.00 && calLabel) {
+    show('eng-row-cal');
+    setText('eng-cal', '+' + fmt(calSurcharge) + ' (' + calLabel + ')');
+  } else { hide('eng-row-cal'); }
+
+  if (dispatchFee > 0) { show('eng-row-dispatch'); setText('eng-dispatch', fmt(dispatchFee)); }
+  else hide('eng-row-dispatch');
+
+  if (mileageSurcharge > 0) { show('eng-row-mileage'); setText('eng-mileage', fmt(mileageSurcharge) + ' (' + miles + ' mi)'); }
+  else hide('eng-row-mileage');
+
+  if (stairCost > 0) { show('eng-row-stairs'); setText('eng-stairs', fmt(stairCost)); }
+  else hide('eng-row-stairs');
+
+  if (elevator) show('eng-row-elevator');
+  else hide('eng-row-elevator');
+
+  if (heavyCost > 0) { show('eng-row-heavy'); setText('eng-heavy', fmt(heavyCost)); }
+  else hide('eng-row-heavy');
+
+  if (packingCost > 0) { show('eng-row-packing'); setText('eng-packing', fmt(packingCost)); }
+  else hide('eng-row-packing');
+
+  // Totals
+  showBlock('eng-total-block');
+  setText('eng-total', fmt(total));
+  setText('eng-deposit', fmt(deposit));
+
+  // Fill hidden fields for form submission
+  const _hq = document.getElementById('hid-quote');
+  const _hc = document.getElementById('hid-crew');
+  const _ht = document.getElementById('hid-truck');
+  const _hm = document.getElementById('hid-miles');
+  if(_hq) _hq.value = fmt(total) + ' (deposit: ' + fmt(deposit) + ')';
+  if(_hc) _hc.value = crewLabel;
+  if(_ht) _ht.value = truckLabel;
+  if(_hm) _hm.value = miles + ' miles';
+}
+
+// Quote form submit handler
+async function handleQuoteSubmit(e) {
+  e.preventDefault();
+  const form = document.getElementById('quoteForm');
+  const btn  = document.getElementById('quote-submit-btn');
+  const ok   = document.getElementById('quote-success');
+  const err  = document.getElementById('quote-error');
+  if (!btn) return;
+  btn.innerHTML = 'Sending...';
+  btn.disabled = true;
+  if(ok) ok.style.display = 'none';
+  if(err) err.style.display = 'none';
+  try {
+    const res = await fetch('https://formspree.io/f/mnjrjaln', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: new FormData(form)
+    });
+    if (res.ok) {
+      if(ok) ok.style.display = 'block';
+      form.reset();
+      runEngine();
+      toast('Quote Submitted ✓', 'We will respond within 48 hours.');
+    } else {
+      if(err) err.style.display = 'block';
+    }
+  } catch(ex) {
+    if(err) err.style.display = 'block';
+  } finally {
+    btn.innerHTML = 'Submit Quote Request →';
+    btn.disabled = false;
+  }
+}
+</script>
+
+
+function toggleHeavyCard(input) {
+  const card = input.closest('.heavy-card');
+  if (card) card.classList.toggle('selected', input.checked);
 }
 
 </body>
