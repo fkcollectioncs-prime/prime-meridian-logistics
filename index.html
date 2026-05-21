@@ -2659,7 +2659,7 @@ function changeMoverCount(delta) {
 // Heavy card click — handled via onclick on each card directly
 </script>
 
-
+<script>
 // Sync engine deposit to payment button
 function syncDepositButton() {
   var engDeposit = document.getElementById('eng-deposit');
@@ -2699,5 +2699,7 @@ var _origRunEngine = typeof runEngine === 'function' ? runEngine : null;
 
 // Call sync after each engine run — patch runEngine
 // syncDepositButton called directly from runEngine below
+</script>
+
 </body>
 </html>
